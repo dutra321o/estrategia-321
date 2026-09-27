@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estratégia 3-2-1 | Meu Plano</title>
+<style>
+:root{--n:#0b1f33;--b:#165a9c;--g:#f2b705;--bg:#f4f7fb;--l:#dbe3ec;--t:#17212b}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}
+header{background:var(--n);color:white;padding:20px;position:sticky;top:0;z-index:5}.brand{font-size:22px;font-weight:800}.brand b{color:var(--g)}
+nav{display:flex;gap:7px;overflow:auto;padding:10px;background:white;border-bottom:1px solid var(--l);position:sticky;top:68px;z-index:4}nav button{border:0;padding:10px 13px;border-radius:9px;font-weight:700;white-space:nowrap}nav .on{background:var(--b);color:white}
+main{max-width:1000px;margin:auto;padding:20px 15px 50px}.screen{display:none}.screen.on{display:block}
+.hero,.card{border-radius:16px;padding:20px;margin-bottom:14px}.hero{background:linear-gradient(135deg,var(--n),#174d7d);color:white}.card{background:white;border:1px solid var(--l);box-shadow:0 3px 12px #0000000a}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.big{font-size:27px;font-weight:800;color:var(--b)}
+input{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;font-size:16px}label{display:block;font-weight:700;margin:8px 0 5px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>div{flex:1;min-width:180px}
+button.action{background:var(--g);border:0;padding:11px 16px;border-radius:9px;font-weight:800;cursor:pointer}
+button.blue{background:var(--b);color:white;border:0;padding:11px 16px;border-radius:9px;font-weight:800}
+table{width:100%;border-collapse:collapse}th,td{padding:9px;border-bottom:1px solid var(--l);text-align:left}.muted{color:#64748b}
+.progress{height:14px;background:#e5e7eb;border-radius:20px;overflow:hidden}.bar{height:100%;background:#178a55;width:0}
+.check{padding:11px 0;border-bottom:1px solid var(--l)}.check input{width:auto}.month{border-left:5px solid var(--b)}
+footer{text-align:center;color:#64748b;padding:20px;font-size:13px}
+</style>
+<style>
+#authGate{position:fixed;inset:0;background:#0b1f33;display:flex;align-items:center;justify-content:center;padding:20px;z-index:9999}
+#authCard{width:min(430px,100%);background:white;border-radius:18px;padding:28px;box-shadow:0 20px 60px #0008}
+#authCard h1{margin-top:0;color:#0b1f33}
+#authCard .authInput{width:100%;padding:12px;margin:7px 0;border:1px solid #cbd5e1;border-radius:9px;font-size:16px}
+#authCard button{width:100%;margin-top:10px}
+#authMsg{min-height:24px;margin-top:12px;font-weight:700}
+#locked{display:none}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="authGate">
+  <div id="authCard">
+    <h1>Estratégia 3-2-1</h1>
+    <p>Área exclusiva para clientes.</p>
+    <input id="authEmail" class="authInput" type="email" placeholder="Seu e-mail">
+    <input id="authPassword" class="authInput" type="password" placeholder="Sua senha">
+    <button class="blue" onclick="login()">Entrar</button>
+    <button class="action" onclick="signup()">Criar acesso</button>
+    <p id="authMsg"></p>
+  </div>
+</div>
+<div id="locked" style="position:fixed;inset:0;background:#f4f7fb;z-index:9998;display:none;align-items:center;justify-content:center;padding:20px;text-align:center">
+  <div class="card" style="max-width:520px">
+    <h2>Acesso ainda não liberado</h2>
+    <p>Seu cadastro foi encontrado, mas o acesso ao Método 3-2-1 ainda não está ativo.</p>
+    <button class="blue" onclick="logout()">Sair</button>
+  </div>
+</div>
+<header><div class="brand">Estratégia <b>3-2-1</b></div><small>Meu plano para sair das dívidas</small></header>
+<nav>
+<button class="on" onclick="show('inicio',this)">Início</button>
+<button onclick="show('dividas',this)">Dívidas</button>
+<button onclick="show('raiox',this)">Raio-X</button>
+<button onclick="show('dias',this)">7 Dias</button>
+<button onclick="show('metodo',this)">3-2-1</button>
+<button onclick="show('plano',this)">12 Meses</button>
+</nav>
+<main>
+
+<section id="inicio" class="screen on">
+<div class="hero"><h1>Seu plano financeiro começa aqui.</h1><p>Organize suas dívidas, defina suas metas e acompanhe seu progresso.</p></div>
+<div class="grid">
+<div class="card"><h3>Dívida total</h3><div class="big" id="total">R$ 0,00</div></div>
+<div class="card"><h3>Meta mensal</h3><div class="big" id="mensal">R$ 0,00</div></div>
+<div class="card"><h3>Meta semanal</h3><div class="big" id="semanal">R$ 0,00</div></div>
+</div>
+<div class="card"><h3>Progresso</h3><div class="progress"><div id="bar" class="bar"></div></div><p id="prog" class="muted">Cadastre suas dívidas para começar.</p></div>
+<div class="grid">
+<div class="card"><b>3 PASSOS</b><p>Reorganizar → Negociar → Automatizar.</p></div>
+<div class="card"><b>2 REGRAS</b><p>Não criar novas dívidas. Dinheiro economizado → dívida.</p></div>
+<div class="card"><b>1 RITUAL</b><p>20 minutos por semana para revisar gastos, saldos e progresso.</p></div>
+</div>
+</section>
+
+<section id="dividas" class="screen">
+<h2>Minhas dívidas</h2><p class="muted">Cadastre valor e juros mensais. A lista é ordenada pela maior taxa.</p>
+<div class="card"><div class="row">
+<div><label>Nome</label><input id="dn" placeholder="Cartão de crédito"></div>
+<div><label>Valor</label><input id="dv" type="number" step=".01"></div>
+<div><label>Juros/mês (%)</label><input id="dr" type="number" step=".01"></div>
+<div><button class="action" onclick="add()">Adicionar</button></div>
+</div></div>
+<div class="card"><table><thead><tr><th>Dívida</th><th>Valor</th><th>Juros</th><th></th></tr></thead><tbody id="list"></tbody></table></div>
+</section>
+
+<section id="raiox" class="screen">
+<h2>Raio-X Financeiro</h2><p class="muted">Registre os gastos nas três categorias.</p>
+<div class="grid">
+<div class="card"><h3>Fixos essenciais</h3><input id="fix" type="number" step=".01"></div>
+<div class="card"><h3>Variáveis essenciais</h3><input id="var" type="number" step=".01"></div>
+<div class="card"><h3>Supérfluos</h3><input id="sup" type="number" step=".01"></div>
+</div>
+<button class="blue" onclick="saveRay()">Salvar Raio-X</button>
+<div class="card"><h3>Total registrado</h3><div class="big" id="rayTotal">R$ 0,00</div></div>
+</section>
+
+<section id="dias" class="screen">
+<h2>Plano de 7 Dias</h2><div class="card" id="checks"></div>
+</section>
+
+<section id="metodo" class="screen">
+<div class="hero"><h1>O Método 3-2-1</h1><p>Uma estrutura simples para organizar, negociar e automatizar.</p></div>
+<div class="grid">
+<div class="card"><h2>3 Passos</h2><p><b>1. Reorganizar</b> — encontrar vazamentos.</p><p><b>2. Negociar</b> — reduzir o peso das dívidas.</p><p><b>3. Automatizar</b> — programar o fluxo.</p></div>
+<div class="card"><h2>2 Regras</h2><p>Não criar novas dívidas.</p><p>O dinheiro economizado vai para a dívida.</p></div>
+<div class="card"><h2>1 Ritual</h2><p>20 minutos por semana para revisar gastos, saldos e progresso.</p></div>
+</div>
+<div class="card"><h3>Roteiro de negociação</h3><p>“Estou com dificuldades e quero quitar minha dívida. Podem me ajudar?”</p><p>“Esse é o melhor valor que vocês podem fazer?”</p><button class="blue" onclick="navigator.clipboard.writeText('Estou com dificuldades e quero quitar minha dívida. Podem me ajudar?')">Copiar roteiro</button></div>
+<div class="card"><h3>Regra dos 10%</h3><p>Informe um dinheiro extra:</p><input id="extra" type="number" step=".01" oninput="extraCalc()"><p>10% para você: <b id="e10">R$ 0,00</b></p><p>90% para a dívida: <b id="e90">R$ 0,00</b></p></div>
+</section>
+
+<section id="plano" class="screen"><h2>Plano de 12 Meses</h2><div id="months"></div></section>
+</main>
+<footer>Estratégia 3-2-1 — ferramenta de acompanhamento baseada no conteúdo do e-book.</footer>
+
+<script>
+
+const SUPABASE_URL = 'https://grndwpphocblvjqwtbeh.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_m4iiIfopXqvYC04bHJKHsQ_5Pdpx487';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+function setAuthMsg(msg, ok=false){
+  const el=document.getElementById('authMsg');
+  el.textContent=msg;
+  el.style.color=ok?'#178a55':'#b42318';
+}
+
+async function login(){
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPassword').value;
+  if(!email||!password) return setAuthMsg('Informe e-mail e senha.');
+  setAuthMsg('Entrando...', true);
+  const {error}=await sb.auth.signInWithPassword({email,password});
+  if(error) return setAuthMsg(error.message);
+  await checkAccess();
+}
+
+async function signup(){
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPassword').value;
+  if(!email||!password) return setAuthMsg('Informe e-mail e senha.');
+  if(password.length<6) return setAuthMsg('A senha precisa ter pelo menos 6 caracteres.');
+  setAuthMsg('Criando acesso...', true);
+  const {data,error}=await sb.auth.signUp({email,password});
+  if(error) return setAuthMsg(error.message);
+  if(data.session) {
+    await checkAccess();
+  } else {
+    setAuthMsg('Cadastro criado. Confirme seu e-mail e depois entre. O acesso será liberado após a confirmação do pagamento.', true);
+  }
+}
+
+async function checkAccess(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){
+    document.getElementById('authGate').style.display='flex';
+    return;
+  }
+  const {data,error}=await sb.from('acessos').select('ativo').eq('user_id',session.user.id).maybeSingle();
+  if(error){
+    document.getElementById('authGate').style.display='flex';
+    return setAuthMsg('A tabela de acesso ainda precisa ser configurada no Supabase.');
+  }
+  document.getElementById('authGate').style.display='none';
+  if(data?.ativo===true){
+    document.getElementById('locked').style.display='none';
+    document.body.style.overflow='';
+  }else{
+    document.getElementById('locked').style.display='flex';
+  }
+}
+
+async function logout(){
+  await sb.auth.signOut();
+  location.reload();
+}
+
+sb.auth.onAuthStateChange((_event,_session)=>{ checkAccess(); });
+
+const fmt=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n)||0);
+let debts=JSON.parse(localStorage.getItem('321debts')||'[]');
+let ray=JSON.parse(localStorage.getItem('321ray')||'{"f":0,"v":0,"s":0}');
+let ck=JSON.parse(localStorage.getItem('321ck')||'[]');
+const tasks=['Listar todas as dívidas','Levantar os gastos dos últimos 30 dias','Cortar um gasto desnecessário','Separar principal, dívidas e emergência','Definir a meta mensal','Definir a meta semanal','Fazer a primeira ação'];
+const ms=[['Mês 1','Organize o diagnóstico, liste dívidas, taxas e valores, enxugue gastos e defina o valor mensal.'],['Mês 2','Negocie as duas primeiras dívidas do ranking.'],['Mês 3','Automatize pagamentos e transferências programadas.'],['Mês 4','Revise o orçamento e direcione sobra para a dívida com maior juro.'],['Mês 5','Ataque a terceira dívida e considere valores extras.'],['Mês 6','Faça uma pausa estratégica, avalie o progresso e ajuste.'],['Mês 7','Repita as negociações para as dívidas restantes.'],['Mês 8','Mantenha a automação e não crie novas dívidas.'],['Mês 9','Antecipe parcelas se possível, priorizando juros mais altos.'],['Mês 10','Revise a reserva e comece a guardar 10% do valor liberado.'],['Mês 11','Acelere a última dívida.'],['Mês 12','Feche o ciclo, faça o balanço e planeje os próximos objetivos.']];
+function show(id,b){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('on'));document.getElementById(id).classList.add('on');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');scrollTo(0,0)}
+function render(){debts.sort((a,b)=>b.r-a.r);list.innerHTML=debts.map((d,i)=>`<tr><td>${d.n}</td><td>${fmt(d.v)}</td><td>${d.r}%</td><td><button onclick="del(${i})">Excluir</button></td></tr>`).join('');let t=debts.reduce((s,d)=>s+d.v,0);total.textContent=fmt(t);mensal.textContent=fmt(t/12);semanal.textContent=fmt(t/48);fix.value=ray.f||'';var.value=ray.v||'';sup.value=ray.s||'';rayTotal.textContent=fmt(ray.f+ray.v+ray.s);let paid=+localStorage.getItem('321paid')||0,p=t?(paid/t*100):0;bar.style.width=Math.min(100,p)+'%';prog.textContent=t?`Pago: ${fmt(paid)} de ${fmt(t)} — ${p.toFixed(1)}%`:'Cadastre suas dívidas para começar.';checks.innerHTML=tasks.map((x,i)=>`<label class="check"><input type="checkbox" ${ck[i]?'checked':''} onchange="ck[i]=this.checked;localStorage.setItem('321ck',JSON.stringify(ck))"> ${x}</label>`).join('');months.innerHTML=ms.map(m=>`<div class="card month"><h3>${m[0]}</h3><p>${m[1]}</p></div>`).join('')}
+function add(){let n=dn.value.trim(),v=+dv.value,r=+dr.value||0;if(!n||v<=0)return alert('Informe nome e valor.');debts.push({n,v,r});localStorage.setItem('321debts',JSON.stringify(debts));dn.value=dv.value=dr.value='';render()}
+function del(i){debts.splice(i,1);localStorage.setItem('321debts',JSON.stringify(debts));render()}
+function saveRay(){ray={f:+fix.value||0,v:+var.value||0,s:+sup.value||0};localStorage.setItem('321ray',JSON.stringify(ray));render();alert('Raio-X salvo.')}
+function extraCalc(){let x=+extra.value||0;e10.textContent=fmt(x*.1);e90.textContent=fmt(x*.9)}
+render();
+</script>
+</body></html>
